@@ -209,3 +209,11 @@
 - экран «Корзина» — по названию;
 - экран «Мои NFT» — по рейтингу;
 - экран «Статистика» — по рейтингу.
+
+## Скриншоты
+![Simulator Screenshot - iPhone 15 - 2024-02-10 at 16 27 44](https://github.com/YanikMax/iOS-FakeNFT-StarterProject-Public/assets/127760695/df822ba1-32bf-412a-945d-cf16e94be301)
+![Simulator Screenshot - iPhone 15 - 2024-02-10 at 16 28 14](https://github.com/YanikMax/iOS-FakeNFT-StarterProject-Public/assets/127760695/f50824cd-8d90-4119-89d3-d98646f5591b)
+![Simulator Screenshot - iPhone 15 - 2024-02-10 at 16 29 30](https://github.com/YanikMax/iOS-FakeNFT-StarterProject-Public/assets/127760695/7f220176-529e-4cdb-afd1-78497cec7173)
+![Simulator Screenshot - iPhone 15 - 2024-02-10 at 16 29 46](https://github.com/YanikMax/iOS-FakeNFT-StarterProject-Public/assets/127760695/ab89e653-5170-427c-affe-2cdfbc9e433c)
+![Simulator Screenshot - iPhone 15 - 2024-02-10 at 16 29 52](https://github.com/YanikMax/iOS-FakeNFT-StarterProject-Public/assets/127760695/f4cf7548-72a2-499f-baf9-e4828ad74ef5)
+
