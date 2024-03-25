@@ -8,7 +8,7 @@
 protocol UserCardViewOutput {
     func updateUI()
     func getUserInfo() -> StatisticsUserModel
-    func getNfts() -> [Nft]
+    func getNfts() -> [String]
     func getUserId() -> String
 }
 
@@ -37,7 +37,7 @@ final class UserCardPresenter: UserCardViewOutput {
         return user
     }
 
-    func getNfts() -> [Nft] {
+    func getNfts() -> [String] {
         return user.nfts ?? []
     }
 

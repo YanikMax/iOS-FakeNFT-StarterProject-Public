@@ -71,6 +71,8 @@ final class CartViewController: UIViewController, CartViewControllerProtocol {
         button.setTitleColor(.nftWhite, for: .normal)
         button.backgroundColor = .nftBlack
         button.layer.cornerRadius = 16
+        button.accessibilityIdentifier = "payButton"
+
         button.addTarget(nil, action: #selector(paymentButtonDidTap), for: .touchUpInside)
 
         return button

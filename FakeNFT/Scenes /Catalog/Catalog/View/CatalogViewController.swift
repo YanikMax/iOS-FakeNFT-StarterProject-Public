@@ -43,6 +43,7 @@ final class CatalogViewController: UIViewController, CatalogView {
     // MARK: - Private Properties
     private lazy var catalogTableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.accessibilityIdentifier = "catalogTableView"
         return tableView
     }()
 

@@ -5,6 +5,7 @@ protocol MyNFTViewProtocol: AnyObject {
 }
 
 final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
+    // MARK: - Private Properties
     private var presenter: MyNFTPresenter!
     private var viewModel: [MyNFTViewModel] = []
 
@@ -17,6 +18,7 @@ final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
         tableView.isUserInteractionEnabled = true
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.accessibilityIdentifier = "myNFTTable"
         tableView.register(MyNFTTableViewCell.self, forCellReuseIdentifier: "MyNFTTableViewCell")
         return tableView
     }()
@@ -32,6 +34,7 @@ final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
         return label
     }()
 
+    // MARK: - View Life Cycles
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -52,6 +55,7 @@ final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
         self.tabBarController?.tabBar.isHidden = false
     }
 
+    // MARK: - Public Methods
     func updateNFT(viewModel: [MyNFTViewModel]) {
         self.viewModel = viewModel
         myNFTTable.reloadData()
@@ -59,11 +63,11 @@ final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
         if viewModel.isEmpty {
             noNFTLabel.isHidden = false
         } else {
-            // Скрываем лейбл, если есть данные
             noNFTLabel.isHidden = true
         }
     }
 
+    // MARK: - Private Methods
     private func setupConstraints() {
         view.addSubview(myNFTTable)
         view.addSubview(noNFTLabel)
@@ -96,6 +100,7 @@ final class MyNFTViewController: UIViewController, MyNFTViewProtocol {
             action: #selector(backButtonTapped)
         )
         backButton.tintColor = .black
+        backButton.accessibilityIdentifier = "backButton"
         navigationItem.leftBarButtonItem = backButton
 
         let sortButton = UIBarButtonItem(
