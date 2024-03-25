@@ -62,6 +62,7 @@ final class NFTCell: UICollectionViewCell, ReuseIdentifying {
     private lazy var likeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "likeButton"
         button.addTarget(self, action: #selector(addToFavourites), for: .touchUpInside)
         button.accessibilityLabel = "Add to Favourites"
         return button
@@ -110,6 +111,7 @@ final class NFTCell: UICollectionViewCell, ReuseIdentifying {
         addSubviews()
         updateLikedButton()
         updateCartButton()
+        self.accessibilityIdentifier = "NFTCell"
     }
 
     private func addSubviews() {

@@ -10,7 +10,7 @@ import Foundation
 struct StatisticsUserModel: Decodable {
     let avatar: String?
     let username: String?
-    let nfts: [Nft]?
+    let nfts: [String]?
     let nftCount: String?
     let description: String?
     let website: String?
@@ -30,7 +30,7 @@ struct StatisticsUserModel: Decodable {
 
     init(avatar: String? = nil,
          username: String? = nil,
-         nfts: [Nft]? = nil,
+         nfts: [String]? = nil,
          nftCount: String? = nil,
          description: String? = nil,
          website: String? = nil,

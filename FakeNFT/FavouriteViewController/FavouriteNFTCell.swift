@@ -1,8 +1,10 @@
 import UIKit
 
 final class FavoriteNFTCell: UICollectionViewCell {
+    // MARK: - Public Properties
     var presenter: FavoriteNFTPresenter?
 
+    // MARK: - Private Properties
     private lazy var nftImage: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 12
@@ -63,6 +65,7 @@ final class FavoriteNFTCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Public Methods
     func configureCell(with model: FavoriteNFTViewModel) {
         if let firstImageURL = model.images?.first, let url = URL(string: firstImageURL.absoluteString) {
             nftImage.kf.setImage(with: url)
@@ -76,6 +79,7 @@ final class FavoriteNFTCell: UICollectionViewCell {
         nftFavorite.nftID = model.id
     }
 
+    // MARK: - Private Methods
     private func setupConstraints() {
         [nftImage, nftFavorite, nftStack].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -100,6 +104,7 @@ final class FavoriteNFTCell: UICollectionViewCell {
 
             nftStack.centerYAnchor.constraint(equalTo: centerYAnchor),
             nftStack.leadingAnchor.constraint(equalTo: nftImage.trailingAnchor, constant: 12),
+            nftStack.widthAnchor.constraint(equalToConstant: 92),
 
             nftRating.heightAnchor.constraint(equalToConstant: 12)
         ])

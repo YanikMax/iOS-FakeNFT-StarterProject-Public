@@ -9,14 +9,14 @@ class ProfilePresenterImpl {
     // MARK: - Public Properties
     var user: Profile?
     var defaultNetworkClient = DefaultNetworkClient()
+    var myNFTPresenter: MyNFTPresenter?
     // MARK: - Private Properties
     private weak var view: ProfilePresenter?
     // MARK: - Initializers
     init(view: ProfilePresenter) {
         self.view = view
     }
-
-    // MARK: - Prublic Methods
+    // MARK: - Public Methods
 
     func fetchData() {
         ProgressHUD.show()
@@ -25,12 +25,19 @@ class ProfilePresenterImpl {
             case .success(let data):
                 do {
                     let profile = try JSONDecoder().decode(Profile.self, from: data)
+
                     if let likes = profile.likes {
                         print("Liked NFTs IDs: \(likes)")
-                    } else {
-                        print("Liked NFTs IDs is nil")
                     }
 
+                    if let nfts = profile.nfts {
+                        DispatchQueue.main.async {
+                            self?.myNFTPresenter?.user = profile
+                            self?.myNFTPresenter?.loadNFTData()
+                        }
+                    } else {
+                        print("NFTs IDs is nil")
+                    }
                     DispatchQueue.main.async {
                         self?.view?.updateUser(user: profile)
                         ProgressHUD.dismiss()
@@ -67,6 +74,7 @@ class ProfilePresenterImpl {
         }
         task.resume()
     }
+    // MARK: - Private Methods
 
     private func getDataUser(completion: @escaping (Result<Data, Error>) -> Void) {
         guard let url = URL(string: "\(RequestConstants.baseURL)/api/v1/profile/1") else {

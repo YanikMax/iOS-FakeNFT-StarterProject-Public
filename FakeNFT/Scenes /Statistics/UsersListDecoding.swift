@@ -12,7 +12,7 @@ struct UsersListElement: Codable {
     let name, avatar: String
     let description: String
     let website: String
-    let nfts: [Nft]
+    let nfts: [String]
     let rating, id: String
 }
 

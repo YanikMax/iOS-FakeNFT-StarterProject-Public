@@ -8,6 +8,7 @@ final class ProfileViewController: UIViewController, ProfilePresenter {
     private var cellTexts = ["Мои NFT", "Избранные NFT", "О разработчике"]
     private var nftCount: Int?
     private var currentDisplayedUser: Profile?
+    private var myNFTPresenter: MyNFTPresenter?
 
     private lazy var avatarImageView: UIImageView = {
         let imageView = UIImageView()
@@ -50,6 +51,7 @@ final class ProfileViewController: UIViewController, ProfilePresenter {
     private let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.accessibilityIdentifier = "profileTableView"
         tableView.separatorInset = .init(top: 16, left: 16, bottom: 16, right: 16)
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white
@@ -58,6 +60,7 @@ final class ProfileViewController: UIViewController, ProfilePresenter {
     }()
     private lazy var editButton: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem()
+        barButtonItem.accessibilityIdentifier = "edit"
         barButtonItem.image = UIImage(named: "editButton")
         barButtonItem.tintColor = .black
         barButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 9)
@@ -85,17 +88,6 @@ final class ProfileViewController: UIViewController, ProfilePresenter {
         presenter.fetchData()
 
         setupNFTPresenter()
-    }
-
-    private func setupNFTPresenter() {
-        let updateNFTCountClosure: (Int) -> Void = { [weak self] count in
-            self?.nftCount = count
-            DispatchQueue.main.async { [weak self] in
-                self?.tableView.reloadData()
-            }
-        }
-        let myNFTPresenter = MyNFTPresenter(onNFTCountUpdate: updateNFTCountClosure)
-        myNFTPresenter.loadNFTData()
     }
 
     // MARK: - Public Methods
@@ -150,6 +142,17 @@ final class ProfileViewController: UIViewController, ProfilePresenter {
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
+    }
+
+    private func setupNFTPresenter() {
+        let updateNFTCountClosure: (Int) -> Void = { [weak self] count in
+            self?.nftCount = count
+            DispatchQueue.main.async { [weak self] in
+                self?.tableView.reloadData()
+            }
+        }
+        myNFTPresenter = MyNFTPresenter(onNFTCountUpdate: updateNFTCountClosure)
+        myNFTPresenter?.loadNFTData()
     }
 
     private func createChevronImageView() -> UIImageView {

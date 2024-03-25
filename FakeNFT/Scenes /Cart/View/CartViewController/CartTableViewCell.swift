@@ -146,15 +146,16 @@ final class CartTableViewCell: UITableViewCell {
             subView.removeFromSuperview()
         }
 
-        let roundedRating = Int(round(Double(nft.rating/2)))
-        for _ in 0..<roundedRating {
+        let roundedRating = Int(round(Double(nft.rating / 2)))
+
+        for _ in 0..<min(roundedRating, 5) {
             let starImageView = UIImageView(image: UIImage(named: "filledStar"))
             ratingStackView.addArrangedSubview(starImageView)
             starImageView.widthAnchor.constraint(equalToConstant: 12).isActive = true
             starImageView.heightAnchor.constraint(equalToConstant: 12).isActive = true
         }
 
-        for _ in roundedRating..<5 {
+        for _ in min(roundedRating, 5)..<5 {
             let starImageView = UIImageView(image: UIImage(named: "star"))
             ratingStackView.addArrangedSubview(starImageView)
             starImageView.widthAnchor.constraint(equalToConstant: 12).isActive = true

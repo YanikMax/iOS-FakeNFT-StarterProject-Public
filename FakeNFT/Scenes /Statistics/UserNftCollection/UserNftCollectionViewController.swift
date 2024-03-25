@@ -6,7 +6,7 @@
 //
 
 protocol NftViewOutput: AnyObject {
-    func fetchDataForNftArray(_ nftArray: [Nft])
+    func fetchDataForNftArray(_ nftArray: [String])
     func handleLikeButtonTap(for nftId: String)
     func handleCartButtonTap(for nftId: String)
     var likedNftIds: [String] { get set }
@@ -17,13 +17,13 @@ import UIKit
 
 final class UserNftCollectionViewController: UIViewController {
 
-    private var nftArray: [Nft] = []
+    private var nftArray: [String] = []
     private var nftsInfo: [NftModel] = []
     private var networkClient: StatisticsNetworkClientProtocol
     private var presenter: NftViewOutput?
     private var userId: String
 
-    init(userId: String, nftArray: [Nft], networkClient: StatisticsNetworkClientProtocol = StatisticsNetworkClient()) {
+    init(userId: String, nftArray: [String], networkClient: StatisticsNetworkClientProtocol = StatisticsNetworkClient()) {
         self.userId = userId
         self.nftArray = nftArray
         self.networkClient = networkClient

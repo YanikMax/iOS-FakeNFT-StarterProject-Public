@@ -21,6 +21,7 @@ final class PaymentTypeViewController: UIViewController, PaymentTypeViewControll
         collectionView.isUserInteractionEnabled = true
         collectionView.isScrollEnabled = false
         collectionView.allowsMultipleSelection = false
+        collectionView.accessibilityIdentifier = "cartCollection"
 
         return collectionView
     }()
@@ -99,6 +100,7 @@ final class PaymentTypeViewController: UIViewController, PaymentTypeViewControll
             backButton.setImage(UIImage(named: "chevronBackward"), for: .normal)
             backButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
             backButton.addTarget(self, action: #selector(backButtonDidTap), for: .touchUpInside)
+            backButton.accessibilityIdentifier = "backButton"
 
             let imageBarButtonItem = UIBarButtonItem(customView: backButton)
             self.navigationItem.leftBarButtonItem = imageBarButtonItem
@@ -217,7 +219,7 @@ final class PaymentTypeViewController: UIViewController, PaymentTypeViewControll
     }
 }
 
-    // MARK: - UICollectionViewDataSource
+// MARK: - UICollectionViewDataSource
 
 extension PaymentTypeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -246,7 +248,7 @@ extension PaymentTypeViewController: UICollectionViewDataSource {
     }
 }
 
-    // MARK: - UICollectionViewDelegateFlowLayout
+// MARK: - UICollectionViewDelegateFlowLayout
 
 extension PaymentTypeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
@@ -271,7 +273,7 @@ extension PaymentTypeViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-    // MARK: - UICollectionViewDelegate
+// MARK: - UICollectionViewDelegate
 
 extension PaymentTypeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
