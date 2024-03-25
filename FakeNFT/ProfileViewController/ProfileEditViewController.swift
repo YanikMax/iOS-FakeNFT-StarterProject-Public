@@ -13,6 +13,7 @@ final class ProfileEditViewController: UIViewController, ProfilePresenter {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         let closeImage = UIImage(named: "closeButton")
+        button.accessibilityIdentifier = "exitButton"
         button.setImage(closeImage, for: .normal)
         button.tintColor = .black
         button.addTarget(self, action: #selector(exitButtonTapped), for: .touchUpInside)

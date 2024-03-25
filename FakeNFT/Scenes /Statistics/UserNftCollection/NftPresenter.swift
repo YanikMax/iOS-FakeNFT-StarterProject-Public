@@ -54,7 +54,7 @@ final class NftPresenter: NSObject, NftViewOutput {
         self.userDefaultsManager = userDefaultsManager
     }
 
-    func fetchDataForNftArray(_ nftArray: [Nft]) {
+    func fetchDataForNftArray(_ nftArray: [String]) {
         view?.showActivityIndicator()
         view?.displayNftInfo(MockNftData.nft)
         view?.hideActivityIndicator()

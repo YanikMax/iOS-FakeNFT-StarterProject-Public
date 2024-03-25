@@ -2,6 +2,7 @@ import UIKit
 
 final class MyNFTTableViewCell: UITableViewCell {
     var presenter: MyNFTPresenter?
+
     private lazy var nftStack: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -75,6 +76,7 @@ final class MyNFTTableViewCell: UITableViewCell {
     private lazy var nftFavorite: FavouriteButton = {
         let button = FavouriteButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "like"
         button.addTarget(self, action: #selector(self.didTapFavoriteButton(sender:)), for: .touchUpInside)
         return button
     }()

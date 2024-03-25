@@ -6,10 +6,15 @@ protocol MyNFTPresenterProtocol: AnyObject {
 }
 
 final class MyNFTPresenter: MyNFTPresenterProtocol {
+    // MARK: - Public Properties
+    var filteredNFTs: [String] = []
+    var user: Profile?
+
+    // MARK: - Private Properties
     private let defaultNetworkClient = DefaultNetworkClient()
     private var onNFTCountUpdate: ((Int) -> Void)?
     private weak var view: MyNFTViewProtocol?
-    private var likedNFTs: String = ""
+    private var likedNFTs: [String] = []
 
     init(view: MyNFTViewProtocol) {
         self.view = view
@@ -19,60 +24,83 @@ final class MyNFTPresenter: MyNFTPresenterProtocol {
         self.onNFTCountUpdate = onNFTCountUpdate
     }
 
+    // MARK: - Public Methods
+    func toggleLike(for nftId: String) {
+        ProgressHUD.show()
+        if var user = user {
+            if user.likes?.contains(nftId) == true {
+                user.likes = user.likes?.filter { $0 != nftId }
+            } else {
+                user.likes?.append(nftId)
+            }
+            likedNFTs = user.likes ?? []
+            user.likes = likedNFTs
+            self.user = user
+
+            sendUpdatedProfileToServer()
+        }
+    }
+
     func loadNFTData() {
         ProgressHUD.show()
-        // замоканные данные вместо загрузки из сети
-        let mockNFTs = createMockNFTs()
-        let nftCount = mockNFTs.count
-        onNFTCountUpdate?(nftCount)
-        view?.updateNFT(viewModel: mockNFTs)
-
-        fetchLikedNFTs()
+        loadUserProfile()
     }
 
-    func toggleLike(for nftId: String) {
-        var likedNFTsArray = likedNFTs.components(separatedBy: ",").filter { !$0.isEmpty }
-        if let index = likedNFTsArray.firstIndex(of: nftId) {
-            likedNFTsArray.remove(at: index)
-        } else {
-            likedNFTsArray.append(nftId)
-        }
-        likedNFTs = likedNFTsArray.joined(separator: ",")
-
-        updateNFTs()
-        sendUpdatedProfileToServer()
-    }
-
-    private func fetchLikedNFTs() {
-        _ = defaultNetworkClient.send(request: ProfileRequest(), completionQueue: .main) { [weak self] result in
-            ProgressHUD.dismiss()
+    // MARK: - Private Methods
+    private func loadUserProfile() {
+        defaultNetworkClient.send(request: ProfileRequest(), completionQueue: .main) { [weak self] result in
             switch result {
             case .success(let data):
                 do {
-                    let profile = try JSONDecoder().decode(Profile.self, from: data)
+                    let userProfile = try JSONDecoder().decode(Profile.self, from: data)
 
-                    if let likes = profile.likes {
-                        let likesString = likes.joined(separator: ",")
-                        self?.likedNFTs = likesString
-                    } else {
-                        print("Liked NFTs IDs is nil")
+                    self?.user = userProfile
+                    self?.likedNFTs = userProfile.likes ?? []
+
+                    DispatchQueue.main.async {
+                        self?.fetchNFTData()
                     }
-                    self?.updateNFTs()
                 } catch {
-                    print("Error decoding JSON: \(error)")
+                    print("Error decoding user profile JSON: \(error)")
                 }
             case .failure(let error):
-                print("Error fetching liked NFTs data: \(error)")
+                print("Error fetching user profile: \(error)")
             }
         }
     }
 
-    private func updateNFTs() {
-        let mockNFTs = createMockNFTs()
-        let nftCount = mockNFTs.count
+    private func filterNFTsForUser(_ nftData: [MyNFTViewModel], userNFTIds: [String]) -> [MyNFTViewModel] {
+        return nftData.filter { nft in
+            return userNFTIds.contains(nft.id)
+        }
+    }
+
+    private func fetchNFTData() {
+        _ = defaultNetworkClient.send(request: MyNFTRequest(), completionQueue: .main) { [weak self] result in
+            ProgressHUD.dismiss()
+
+            switch result {
+            case .success(let data):
+                do {
+                    let nftData = try JSONDecoder().decode([MyNFTViewModel].self, from: data)
+                    let userNFTIds = self?.user?.nfts ?? []
+                    let filteredNFTs = self?.filterNFTsForUser(nftData, userNFTIds: userNFTIds) ?? []
+
+                    self?.updateNFTs(filteredNFTs)
+                } catch {
+                    print("Error decoding JSON: \(error)") }
+
+            case .failure(let error):
+                print("Error fetching NFT data: \(error)")
+            }
+        }
+    }
+
+    private func updateNFTs(_ nftData: [MyNFTViewModel]) {
+        let nftCount = nftData.count
         onNFTCountUpdate?(nftCount)
 
-        let updatedNFTs = mockNFTs.map { nft in
+        let updatedNFTs = nftData.map { nft in
             var updatedNFT = nft
             updatedNFT.isFavorite = likedNFTs.contains(nft.id)
             return updatedNFT
@@ -93,6 +121,7 @@ final class MyNFTPresenter: MyNFTPresenterProtocol {
                 return
             }
             if let data = data {
+                print("Response data: \(String(data: data, encoding: .utf8) ?? "No data")")
                 completion(.success(data))
             } else {
                 let noDataError = NSError(domain: "NoData", code: 0, userInfo: nil)
@@ -122,60 +151,44 @@ final class MyNFTPresenter: MyNFTPresenterProtocol {
     }
 
     private func createParameters(for profile: Profile) -> [String: Any]? {
-        let parameters: [String: Any] = [
-            "likes": likedNFTs
-        ]
+        var parameters: [String: Any] = [:]
+
+        parameters["name"] = profile.name
+        parameters["description"] = profile.description
+        parameters["website"] = profile.website
+        parameters["avatar"] = profile.avatar
+        parameters["nfts"] = profile.nfts?.joined(separator: ",")
+
+        if !likedNFTs.isEmpty {
+            parameters["likes"] = likedNFTs.joined(separator: ",")
+        }
         return parameters
     }
 
     private func sendUpdatedProfileToServer() {
+        guard let userId = self.user?.id else {
+            print("Error: User ID is missing")
+            return
+        }
         let updatedProfile = Profile(
-            name: "",
-            description: "",
-            website: "",
-            avatar: "",
-            nfts: nil,
-            likes: likedNFTs.components(separatedBy: ","),
-            id: ""
+            name: user?.name ?? "",
+            description: user?.description ?? "",
+            website: user?.website ?? "",
+            avatar: user?.avatar ?? "",
+            nfts: self.filteredNFTs,
+            likes: likedNFTs,
+            id: userId
         )
-        updateProfileData(updatedProfile: updatedProfile) { result in
+        self.user?.likes = likedNFTs
+
+        updateProfileData(updatedProfile: updatedProfile) { [weak self] result in
             switch result {
             case .success:
-                print("Updated likes on the server: \(self.likedNFTs)")
+                self?.fetchNFTData()
             case .failure(let error):
                 print("Error updating the profile: \(error)")
             }
+            ProgressHUD.dismiss()
         }
-    }
-
-    private func createMockNFTs() -> [MyNFTViewModel] {
-        let mockNFT1 = MyNFTViewModel(images:
-                                        [URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/April/1.png")!],
-                                      name: "Lilo",
-                                      rating: 3,
-                                      author: URL(string: "https://condescending_almeida.fakenfts.org/")!,
-                                      price: 10.99,
-                                      isFavorite: true,
-                                      id: "739e293c-1067-43e5-8f1d-4377e744ddde")
-
-        let mockNFT2 = MyNFTViewModel(images:
-                                        [URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/April/1.png")!],
-                                      name: "Spring",
-                                      rating: 3,
-                                      author: URL(string: "https://dazzling_meninsky.fakenfts.org/")!,
-                                      price: 15.99,
-                                      isFavorite: false,
-                                      id: "77c9aa30-f07a-4bed-886b-dd41051fade2")
-
-        let mockNFT3 = MyNFTViewModel(images:
-                                        [URL(string: "https://code.s3.yandex.net/Mobile/iOS/NFT/Beige/April/1.png")!],
-                                      name: "Aprill",
-                                      rating: 4,
-                                      author: URL(string: "https://hungry_darwin.fakenfts.org/")!,
-                                      price: 18.99,
-                                      isFavorite: true,
-                                      id: "ca34d35a-4507-47d9-9312-5ea7053994c0")
-
-        return [mockNFT1, mockNFT2, mockNFT3]
     }
 }

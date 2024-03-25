@@ -5,7 +5,7 @@ struct Profile: Decodable, Encodable {
     var description: String?
     var website: String?
     var avatar: String?
-    var nfts: [Nft]?
+    var nfts: [String]?
     var likes: [String]?
     var id: String
 
